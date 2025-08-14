@@ -10,9 +10,14 @@ export default function CheckoutPage() {
   const [shippingInfo, setShippingInfo] = useState({
     name: "",
     address: "",
+    address1: "",
+    address2: "",
     city: "",
     postalCode: "",
     phone: "",
+    email: "",
+    state: "",
+    country: "",
   });
 
   const handleInputChange = (e) => {
@@ -23,15 +28,32 @@ export default function CheckoutPage() {
   const generateEmailTemplate = (orderDetails) => {
     const { cart, shippingInfo, total } = orderDetails;
   
+    const {
+      name,
+      address,
+      address1,
+      address2,
+      city,
+      state,
+      postalCode,
+      country,
+      phone,
+    } = shippingInfo;
+  
+    const fullAddress = [address, address1, address2, city, state, postalCode, country]
+      .filter(Boolean)
+      .join(", ");
+  
     return `
       <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
         <h2 style="color: #000;">Order Confirmation</h2>
-        <p>Thank you for your order, ${shippingInfo.name}!</p>
+        <p>Thank you for your order, ${name}!</p>
         
         <h3>Shipping Details:</h3>
         <p>
-          <strong>Address:</strong> ${shippingInfo.address}, ${shippingInfo.city}, ${shippingInfo.postalCode}<br>
-          <strong>Phone:</strong> ${shippingInfo.phone}
+          <strong>Address:</strong> ${fullAddress}<br>
+          <strong>Phone:</strong> ${phone}<br>
+          <strong>Email:</strong> ${shippingInfo.email}
         </p>
         
         <h3>Order Summary:</h3>
@@ -58,10 +80,78 @@ export default function CheckoutPage() {
     `;
   };
   
-  // Usage in handleSubmit
+  
+  const handlePostalCodeChange = async (e) => {
+    const postalCode = e.target.value;
+  
+    setShippingInfo((prev) => ({
+      ...prev,
+      postalCode,
+    }));
+  
+    if (postalCode.length >= 5) {
+      try {
+        const response = await fetch(`https://api.zippopotam.us/in/${postalCode}`);
+  
+        if (!response.ok) {
+          console.warn("Postal code not found in API:", postalCode);
+          return;
+        }
+  
+        const data = await response.json();
+        const place = data.places[0];
+  
+        setShippingInfo((prev) => ({
+          ...prev,
+          city: place['place name'],
+          state: place['state'],
+          country: data.country,
+        }));
+      } catch (error) {
+        console.error("Postal code lookup failed:", error);
+      }
+    }
+  };
+  
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
   
+    // Destructure shippingInfo
+    const { name, address, city, postalCode, phone, email } = shippingInfo;
+  
+    // Validation regex
+    const phoneRegex = /^\+?[0-9\s\-().]{7,}$/;
+    const postalCodeRegex = /^[A-Za-z0-9\s\-]{3,10}$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  
+    // Validation checks
+    if (!name.trim()) {
+      alert("Please enter your full name.");
+      return;
+    }
+  
+    if (!address.trim() || !city.trim()) {
+      alert("Please enter a valid address and city.");
+      return;
+    }
+  
+    if (!postalCodeRegex.test(postalCode)) {
+      alert("Please enter a valid postal code.");
+      return;
+    }
+  
+    if (!phoneRegex.test(phone)) {
+      alert("Please enter a valid phone number.");
+      return;
+    }
+  
+    if (!emailRegex.test(email)) {
+      alert("Please enter a valid email address.");
+      return;
+    }
+  
+    // Build order
     const orderDetails = {
       cart: cart.map((item) => ({
         name: item.name,
@@ -90,7 +180,6 @@ export default function CheckoutPage() {
         clearCart();
         router.push("/");
       } else {
-        // Handle non-JSON or error responses
         const errorText = await response.text();
         try {
           const errorData = JSON.parse(errorText);
@@ -104,6 +193,7 @@ export default function CheckoutPage() {
       alert("An error occurred while placing the order.");
     }
   };
+  
   const goBack = () => router.back();
 
   const getTotal = () =>
@@ -140,7 +230,6 @@ export default function CheckoutPage() {
           Total: ₹{getTotal()}
         </div>
       </div>
-
       <form onSubmit={handleSubmit} className="max-w-xl mx-auto bg-white p-6 rounded shadow">
         <h3 className="text-xl font-bold mb-4">Shipping Details</h3>
 
@@ -151,15 +240,48 @@ export default function CheckoutPage() {
           value={shippingInfo.name}
           onChange={handleInputChange}
           required
+          autoComplete="name"
           className="w-full p-2 border mb-4 rounded"
         />
 
         <input
           type="text"
           name="address"
-          placeholder="Address"
+          placeholder="Address Line 1"
           value={shippingInfo.address}
           onChange={handleInputChange}
+          required
+          autoComplete="street-address"
+          className=
+          "w-full p-2 border mb-4 rounded"
+        />
+        <input
+          type="text"
+          name="address1"
+          placeholder="Address Line 2"
+          value={shippingInfo.address1}
+          onChange={handleInputChange}
+          autoComplete="street-address"
+          className=
+          "w-full p-2 border mb-4 rounded"
+        />
+        <input
+          type="text"
+          name="address2"
+          placeholder="Address Line 3"
+          value={shippingInfo.address2}
+          onChange={handleInputChange}
+          autoComplete="street-address"
+          className=
+          "w-full p-2 border mb-4 rounded"
+        />
+
+        <input
+          type="text"
+          name="postalCode"
+          placeholder="Postal Code"
+          value={shippingInfo.postalCode}
+          onChange={handlePostalCodeChange}
           required
           className="w-full p-2 border mb-4 rounded"
         />
@@ -171,32 +293,60 @@ export default function CheckoutPage() {
           value={shippingInfo.city}
           onChange={handleInputChange}
           required
+          autoComplete="address-level2"
           className="w-full p-2 border mb-4 rounded"
         />
 
         <input
           type="text"
-          name="postalCode"
-          placeholder="Postal Code"
-          value={shippingInfo.postalCode}
+          name="state"
+          placeholder="State"
+          value={shippingInfo.state}
           onChange={handleInputChange}
           required
+          autoComplete="address-level1"
           className="w-full p-2 border mb-4 rounded"
         />
 
         <input
           type="text"
+          name="country"
+          placeholder="Country"
+          value={shippingInfo.country}
+          onChange={handleInputChange}
+          required
+          autoComplete="country-name"
+          className="w-full p-2 border mb-4 rounded"
+        />
+
+
+        <input
+          type="tel"
           name="phone"
           placeholder="Phone Number"
           value={shippingInfo.phone}
           onChange={handleInputChange}
           required
+          pattern="^\+?[0-9\s\-().]{7,}$"
+          title="Phone number must be at least 7 digits and can include +, -, spaces, or parentheses"
+          autoComplete="tel"
+          className="w-full p-2 border mb-4 rounded"
+        />
+
+        <input
+          type="email"
+          name="email"
+          placeholder="Email Address"
+          value={shippingInfo.email}
+          onChange={handleInputChange}
+          required
+          autoComplete="email"
           className="w-full p-2 border mb-6 rounded"
         />
 
         <button
           type="submit"
-          className="w-full bg-black text-white py-3 rounded font-semibold"
+          className="w-full bg-black text-white py-3 rounded font-semibold hover:bg-gray-800 transition"
         >
           Place Order
         </button>

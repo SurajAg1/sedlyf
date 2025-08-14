@@ -20,11 +20,42 @@ export default function CheckoutPage() {
     setShippingInfo({ ...shippingInfo, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert("Order placed successfully!");
-    clearCart();
-    router.push("/");
+  
+    const orderDetails = {
+      cart: cart.map((item) => ({
+        name: item.name,
+        color: item.color,
+        size: item.size,
+        quantity: item.quantity,
+        price: item.price,
+      })),
+      shippingInfo,
+      total: getTotal(),
+    };
+  
+    try {
+      const response = await fetch("/api/place-order", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(orderDetails),
+      });
+  
+      if (response.ok) {
+        alert("Order placed successfully!");
+        clearCart();
+        router.push("/");
+      } else {
+        const errorData = await response.json();
+        alert(`Failed to place order: ${errorData.error}`);
+      }
+    } catch (error) {
+      console.error("Error placing order:", error);
+      alert("An error occurred while placing the order.");
+    }
   };
 
   const goBack = () => router.back();

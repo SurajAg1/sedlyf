@@ -1,55 +1,46 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import tshirts from "@/data/tshirtsData";
 
-export default function ProductPage() {
+export default function ProductPage({ params }) {
   const [product, setProduct] = useState(null);
-  const router = useRouter();
-
-  // Dummy product data (replace this with your actual product list or fetch logic)
-  const products = [
-    {
-      id: 1,
-      name: "Classic White Tee",
-      price: 499,
-      images: {
-        White: "/images/white.jpg",
-      },
-    },
-    {
-      id: 2,
-      name: "Black Minimal Tee",
-      price: 599,
-      images: {
-        Black: "/images/black.jfif",
-      },
-    },
-    // ... add other products here
-  ];
+  const searchParams = useSearchParams(); // Hook to access query parameters
+  const selectedColor = searchParams.get("color"); // Retrieve the 'color' query parameter
 
   useEffect(() => {
-    // Ensure router.query.id is defined before using it
-    if (router.query?.id) {
-      const productId = parseInt(router.query.id); // Assuming the route is /products/[id]
-      const foundProduct = products.find((p) => p.id === productId);
+    async function fetchParams() {
+      const unwrappedParams = await params; // Unwrap the params Promise
+      const productId = parseInt(unwrappedParams.id); // Extract the id from the route parameters
+      const foundProduct = tshirts.find((p) => p.id === productId);
       setProduct(foundProduct);
     }
-  }, [router.query?.id]);
+    fetchParams();
+  }, [params]);
 
   if (!product) {
     return <div className="p-4 text-xl">Loading product details...</div>;
   }
-
+  const normalizedColor = selectedColor?.trim(); // Ensure no extra spaces
+  const imageKey = Object.keys(product.images).find(
+    (key) => key.toLowerCase() === normalizedColor?.toLowerCase()
+  );
+  const imageSrc = product.images[imageKey] || Object.values(product.images)[0];
+  console.log("Selected Color:", selectedColor);
+  console.log("Product Images:", product.images);
+  console.log("Normalized Color:", normalizedColor);
+  console.log("Image Key:", imageKey);
+  console.log("Image Src:", imageSrc);
   return (
     <div className="p-6">
       <h1 className="text-3xl font-bold mb-4">{product.name}</h1>
       <img
-        src={Object.values(product.images)[0]}
+        src={imageSrc}
         alt={product.name}
         className="w-64 h-64 object-contain rounded shadow"
       />
       <p className="text-xl mt-4">Price: ₹{product.price}</p>
-      <p className="text-gray-600 mt-2">Product ID: {product.id}</p>
+      <p className="text-gray-600 mt-2">Selected Color: {selectedColor || "Default"}</p>
     </div>
   );
 }

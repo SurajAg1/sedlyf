@@ -2,23 +2,24 @@ import nodemailer from "nodemailer";
 
 export async function POST(req) {
   try {
-    const data = await req.json();
+    const data = await req.json(); // Parse the request body
+    const { emailTemplate, shippingInfo } = data;
 
     // Configure Nodemailer (use your email credentials or service)
     const transporter = nodemailer.createTransport({
-        service: "Gmail",
-        auth: {
-          user: process.env.EMAIL_USER,
-          pass: process.env.EMAIL_PASS,
-        },
-      });
+      service: "Gmail",
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
 
     // Email content
     const mailOptions = {
-      from: "your-email@gmail.com",
-      to: "your-email@gmail.com", // Replace with your email
-      subject: "New Order Received",
-      text: `Order Details:\n\n${JSON.stringify(data, null, 2)}`,
+      from: process.env.EMAIL_USER,
+      to: shippingInfo.email || process.env.EMAIL_USER, // Use customer's email if provided
+      subject: "Order Confirmation - Your T-Shirt Store",
+      html: emailTemplate, // Use the HTML template
     };
 
     // Send the email

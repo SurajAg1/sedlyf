@@ -33,14 +33,15 @@ export default function ProductCard({
   };
 
   return (
-    <div 
-    onClick={() => router.push('/products/' + shirt.id)}>
+    <div>
     <div className="border rounded-lg p-4 shadow bg-white">
+    <div onClick={() => router.push(`/products/${shirt.id}?color=${selected.color}`)}>
       <img
         src={shirt.images[selected.color]}
         alt={shirt.name}
         className="w-full h-48 sm:h-60 object-contain rounded"
       />
+    </div>
       <h3 className="mt-4 text-lg sm:text-xl font-medium">{shirt.name}</h3>
       <p className="text-gray-600 text-sm sm:text-base">₹{shirt.price}</p>
 

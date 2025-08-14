@@ -20,6 +20,45 @@ export default function CheckoutPage() {
     setShippingInfo({ ...shippingInfo, [name]: value });
   };
 
+  const generateEmailTemplate = (orderDetails) => {
+    const { cart, shippingInfo, total } = orderDetails;
+  
+    return `
+      <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+        <h2 style="color: #000;">Order Confirmation</h2>
+        <p>Thank you for your order, ${shippingInfo.name}!</p>
+        
+        <h3>Shipping Details:</h3>
+        <p>
+          <strong>Address:</strong> ${shippingInfo.address}, ${shippingInfo.city}, ${shippingInfo.postalCode}<br>
+          <strong>Phone:</strong> ${shippingInfo.phone}
+        </p>
+        
+        <h3>Order Summary:</h3>
+        <ul style="list-style: none; padding: 0;">
+          ${cart
+            .map(
+              (item) => `
+            <li style="margin-bottom: 10px; border-bottom: 1px solid #ddd; padding-bottom: 10px;">
+              <strong>${item.name}</strong><br>
+              Color: ${item.color}, Size: ${item.size}<br>
+              Quantity: ${item.quantity}<br>
+              Price: ₹${item.price} x ${item.quantity}
+            </li>
+          `
+            )
+            .join("")}
+        </ul>
+        
+        <h3>Total: ₹${total}</h3>
+        
+        <p>If you have any questions, feel free to contact us.</p>
+        <p>Best regards,<br>Your T-Shirt Store</p>
+      </div>
+    `;
+  };
+  
+  // Usage in handleSubmit
   const handleSubmit = async (e) => {
     e.preventDefault();
   
@@ -35,13 +74,15 @@ export default function CheckoutPage() {
       total: getTotal(),
     };
   
+    const emailTemplate = generateEmailTemplate(orderDetails);
+  
     try {
       const response = await fetch("/api/place-order", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(orderDetails),
+        body: JSON.stringify({ ...orderDetails, emailTemplate }),
       });
   
       if (response.ok) {
@@ -49,15 +90,20 @@ export default function CheckoutPage() {
         clearCart();
         router.push("/");
       } else {
-        const errorData = await response.json();
-        alert(`Failed to place order: ${errorData.error}`);
+        // Handle non-JSON or error responses
+        const errorText = await response.text();
+        try {
+          const errorData = JSON.parse(errorText);
+          alert(`Failed to place order: ${errorData.error}`);
+        } catch {
+          alert(`Failed to place order: ${errorText}`);
+        }
       }
     } catch (error) {
       console.error("Error placing order:", error);
       alert("An error occurred while placing the order.");
     }
   };
-
   const goBack = () => router.back();
 
   const getTotal = () =>

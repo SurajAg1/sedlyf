@@ -19,7 +19,7 @@ export default function CheckoutPage() {
     state: "",
     country: "",
   });
-
+ const [loading, setLoading] = useState(false);
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setShippingInfo({ ...shippingInfo, [name]: value });
@@ -151,6 +151,8 @@ export default function CheckoutPage() {
       return;
     }
   
+    setLoading(true);
+
     // Build order
     const orderDetails = {
       cart: cart.map((item) => ({
@@ -192,6 +194,7 @@ export default function CheckoutPage() {
       console.error("Error placing order:", error);
       alert("An error occurred while placing the order.");
     }
+    setLoading(false);
   };
   
   const goBack = () => router.back();
@@ -201,23 +204,22 @@ export default function CheckoutPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-800 p-8">
-      <h2 className="text-3xl font-semibold mb-6">Checkout</h2>
-
+      <div className="flex gap-4 items-center mb-6">
       <button
         onClick={goBack}
         className="mb-6 px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
-      >
-        ← Back to Shop
-      </button>
-
+        tooltip="Go Back"
+      >←</button>
+      <h2 className="text-3xl font-semibold mb-6">Checkout</h2>
+      </div>
       <div className="mb-8">
         <h3 className="text-2xl font-bold mb-4">Your Cart</h3>
         {cart.length === 0 ? (
           <p>Your cart is empty.</p>
         ) : (
-          <ul className="space-y-3">
+          <ul className="space-3 flex flex-wrap gap-4">
             {cart.map((item) => (
-              <li key={`${item.id}-${item.color}-${item.size}`} className="border p-3 rounded">
+              <li key={`${item.id}-${item.color}-${item.size}`} className="border p-3 rounded w-fit">
                 <div className="font-semibold">{item.name}</div>
                 <div>Color: {item.color}, Size: {item.size}</div>
                 <div>Quantity: {item.quantity}</div>
@@ -346,9 +348,33 @@ export default function CheckoutPage() {
 
         <button
           type="submit"
-          className="w-full bg-black text-white py-3 rounded font-semibold hover:bg-gray-800 transition"
+          className="w-full bg-black text-white py-3 rounded font-semibold hover:bg-gray-800 transition cursor-pointer flex items-center justify-center"
+           disabled={loading}
         >
-          Place Order
+          {loading ? (
+            <svg
+              className="animate-spin h-5 w-5 text-white"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              ></circle>
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+              ></path>
+            </svg>
+          ) : (
+            "Place Order"
+          )}
         </button>
       </form>
     </div>

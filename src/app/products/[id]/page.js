@@ -26,11 +26,6 @@ export default function ProductPage({ params }) {
     (key) => key.toLowerCase() === normalizedColor?.toLowerCase()
   );
   const imageSrc = product.images[imageKey] || Object.values(product.images)[0];
-  console.log("Selected Color:", selectedColor);
-  console.log("Product Images:", product.images);
-  console.log("Normalized Color:", normalizedColor);
-  console.log("Image Key:", imageKey);
-  console.log("Image Src:", imageSrc);
   return (
     <div className="p-6">
       <h1 className="text-3xl font-bold mb-4">{product.name}</h1>

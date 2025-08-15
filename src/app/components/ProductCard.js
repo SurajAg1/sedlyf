@@ -48,13 +48,13 @@ export default function ProductCard({
       {/* Color Selector */}
       <div className="mt-2">
         <label className="text-sm sm:text-base font-medium">Color:</label>
-        <div className="flex gap-2 mt-2">
+        <div className="flex flex-wrap gap-2 mt-2">
           {shirt.colors.map((color) => (
             <div
               key={color}
               onClick={() => handleColorChange(shirt.id, color)}
               className={`relative w-8 h-8 sm:w-10 sm:h-10 rounded-full cursor-pointer ${
-                selected.color === color ? "outline-4 outline-black outline-offset-0" : ""
+                selected.color === color ? "outline-4 outline-black outline-offset-0" : "border"
               }`}
               style={{ backgroundColor: color.toLowerCase() }}
             >
@@ -72,7 +72,7 @@ export default function ProductCard({
       {/* Size Selector */}
       <div className="mt-2">
         <label className="text-sm sm:text-base font-medium">Size:</label>
-        <div className="flex gap-2 mt-2">
+        <div className="flex flex-wrap gap-2 mt-2 ">
           {shirt.sizes.map((size) => (
             <div key={size} className="relative">
               <button

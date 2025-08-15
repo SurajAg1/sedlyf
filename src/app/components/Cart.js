@@ -12,12 +12,12 @@ export default function Cart({
 
   return (
     <>
-      <div className="fixed inset-0 bg-opacity-40 backdrop-blur-sm z-40"></div>
+      <div className="fixed inset-0 bg-opacity-40 backdrop-blur-sm z-50" onClick={toggleCart}></div>
       <div className="fixed top-0 right-0 w-80 h-full bg-white shadow-lg p-6 z-50 overflow-y-auto">
         <h3 className="text-2xl font-bold mb-4">Your Cart</h3>
         {cart.length === 0 ? (
           <p className="text-gray-600">Your cart is empty.</p>
-        ) : (
+        ) : ( 
           <div>
             {cart.map((item) => (
               <div

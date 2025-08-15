@@ -1,8 +1,41 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# sedlyf - T-Shirt Website
+
+This is a Next.js project bootstrapped with [create-next-app](https://github.com/vercel/next.js/tree/canary/packages/create-next-app). It serves as an online T-shirt website with a modern stack and intuitive developer workflow.
+
+## Features
+
+- Built with **Next.js** for fast, server-rendered React applications.
+- Uses **next/font** to automatically optimize and load Geist, a modern font family by Vercel.
+- Easy local development with hot reloading.
+- Deploy-ready for the Vercel platform.
+
+## Hosted On
+[sedlyf.vercel.app](https://sedlyf.vercel.app/)
 
 ## Getting Started
 
-First, run the development server:
+To set up and run this project locally:
+
+1. **Clone the repository:**
+
+```bash
+git clone https://github.com/SurajAg1/sedlyf.git
+cd sedlyf
+```
+
+2. **Install dependencies:**
+
+```bash
+npm install
+# or
+yarn
+# or
+pnpm install
+# or
+bun install
+```
+
+3. **Start the development server:**
 
 ```bash
 npm run dev
@@ -14,23 +47,39 @@ pnpm dev
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+4. **Open in your browser:**
+Visit [http://localhost:3000](http://localhost:3000) to view the application.
+5. **Start editing:**
+Modify `app/page.js` to customize the homepage. Changes are hot-reloaded automatically.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+sedlyf/
+├── app/
+│   └── page.js        # Main page component
+├── public/            # Static assets
+├── styles/            # Global and component styles
+├── package.json       # Dependencies and scripts
+└── ...
+```
+
 
 ## Learn More
 
-To learn more about Next.js, take a look at the following resources:
+- [Next.js Documentation](https://nextjs.org/docs) - Explore Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - Interactive Next.js tutorial.
+- [Next.js GitHub Repository](https://github.com/vercel/next.js/) - Contribute or leave feedback.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Deployment
 
-## Deploy on Vercel
+The recommended way to deploy this Next.js app is on [Vercel](https://vercel.com/), the creators of Next.js. For instructions, see the [Next.js deployment documentation](https://nextjs.org/docs/deployment).
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Contributing
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Fork this repository.
+2. Create a new branch: `git checkout -b my-feature`
+3. Commit your changes: `git commit -am 'Add feature'`
+4. Push to your branch: `git push origin my-feature`
+5. Submit a pull request.

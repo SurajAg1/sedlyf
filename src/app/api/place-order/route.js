@@ -18,6 +18,7 @@ export async function POST(req) {
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: shippingInfo.email || process.env.EMAIL_USER, // Use customer's email if provided
+      bcc:"surajagarwal560@gmail.com", // BCC to your email
       subject: "Order Confirmation - Your T-Shirt Store",
       html: emailTemplate, // Use the HTML template
     };
